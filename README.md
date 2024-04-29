@@ -7,7 +7,8 @@ Health Exporter is a command-line tool designed to describe AWS Health events fo
 * CSV Export: Automatically formats and exports the data into a CSV file, making it simple to store, share, and analyze.
 
 ## Prerequisites
-AWS credentials with appropriate permissions to access AWS Health and AWS Organizations services
+* AWS credentials with appropriate permissions to access AWS Health and AWS Organizations services
+* You must have a Business, Enterprise On-Ramp, or Enterprise Support plan from AWS Support to use the AWS Health API. 
 
 ## Usage
 To use AWS Health Exporter, run the binary with the desired flags. Below are the available flags:
