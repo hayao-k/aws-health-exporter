@@ -13,9 +13,9 @@ Health Exporter is a command-line tool designed to describe AWS Health events fo
 ## Usage
 To use AWS Health Exporter, run the binary with the desired flags. Below are the available flags:
 
-`--service`, `-s`: Filter events by service name (e.g., RDS).
-`--status`, `-t`: Filter events by status. Possible values are open, closed, and upcoming.
-`--echo`, `-e`: Echo CSV content to standard output.
+* `--service`, `-s`: Filter events by service name (e.g., RDS).
+* `--status`, `-t`: Filter events by status. Possible values are open, closed, and upcoming.
+* `--echo`, `-e`: Echo CSV content to standard output.
 
 ### Example Commands
 
@@ -23,7 +23,7 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 # Describe RDS events with open status and export to CSV
 ./health-exporter --service RDS --status open
 
-# Describe upcoming EC2 events and echo the output to STDOUT
+# Describe upcoming LAMBDA events and echo the output to STDOUT
 ./health-exporter --service LAMBDA --status upcoming --echo
 ```
 
@@ -32,14 +32,29 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 $ health-exporter --service=RDS --status=upcoming
 Use the arrow keys to navigate: ↓ ↑ → ← 
 ? Select an event: 
-  ▸ RDS - AWS_RDS_PLANNED_LIFECYCLE_EVENT (ap-northeast-1, 2024-08-22 07:00:00)
-    RDS - AWS_RDS_PLANNED_LIFECYCLE_EVENT (us-east-2, 2024-05-31 07:00:00)
-    RDS - AWS_RDS_PLANNED_LIFECYCLE_EVENT (ap-northeast-1, 2024-05-31 07:00:00)
-    RDS - AWS_RDS_PLANNED_LIFECYCLE_EVENT (us-west-1, 2024-08-22 07:00:00)
-↓   RDS - AWS_RDS_PLANNED_LIFECYCLE_EVENT (us-east-1, 2024-08-22 07:00:00)
+  ▸ LAMBDA - AWS_LAMBDA_PLANNED_LIFECYCLE_EVENT (us-east-1, 2024-10-14 07:00:00)
+    LAMBDA - AWS_LAMBDA_PLANNED_LIFECYCLE_EVENT (ap-northeast-1, 2024-10-14 07:00:00)
+    LAMBDA - AWS_LAMBDA_PLANNED_LIFECYCLE_EVENT (ap-northeast-1, 2024-06-12 07:00:00)
+    LAMBDA - AWS_LAMBDA_PLANNED_LIFECYCLE_EVENT (ap-southeast-2, 2024-10-14 07:00:00)
+↓   LAMBDA - AWS_LAMBDA_PLANNED_LIFECYCLE_EVENT (us-east-1, 2024-06-12 07:00:00)
 
-✔ RDS - AWS_RDS_PLANNED_LIFECYCLE_EVENT (ap-northeast-1, 2024-08-22 07:00:00)
-Event details have been written to AWS_RDS_PLANNED_LIFECYCLE_EVENT_2024-08-22_07-00-00_ap-northeast-1.csv.
+✔ LAMBDA - AWS_LAMBDA_PLANNED_LIFECYCLE_EVENT (us-east-1, 2024-10-14 07:00:00)
+Event details have been written to AWS_LAMBDA_PLANNED_LIFECYCLE_EVENT_2024-10-14_07-00-00_us-east-1.csv.
+```
+
+### Example of output
+```csv
+Account ID,Account Name,Region,Identifier,Status,Last Updated
+000000000000,account-0000,us-east-1,arn:aws:lambda:us-east-1:000000000000:function:Old_Runtime_Lambda_Function-1PBKPZPFSJ058,PENDING,2024-04-21 20:11:29
+111111111111,account-1111,us-east-1,arn:aws:lambda:us-east-1:111111111111:function:Old_Runtime_Lambda_Function-uuTi2u7DbooD,PENDING,2024-04-21 20:11:29
+111111111111,account-1111,us-east-1,arn:aws:lambda:us-east-1:111111111111:function:Old_Runtime_Lambda_Function-omdieC8Umobo,PENDING,2024-04-21 20:11:29
+222222222222,account-2222,us-east-1,arn:aws:lambda:us-east-1:222222222222:function:Old_Runtime_Lambda_Function-ULZ27BYSQ0MN,PENDING,2024-04-21 20:11:29
+222222222222,account-2222,us-east-1,arn:aws:lambda:us-east-1:222222222222:function:Old_Runtime_Lambda_Function-10YNGBMU46VP9,PENDING,2024-04-21 20:11:29
+222222222222,account-2222,us-east-1,arn:aws:lambda:us-east-1:222222222222:function:Old_Runtime_Lambda_Function-CEgHAu41udFy,PENDING,2024-04-21 20:11:29
+333333333333,account-3333,us-east-1,arn:aws:lambda:us-east-1:333333333333:function:Old_Runtime_Lambda_Function-zNKRpLWP0pXB,PENDING,2024-04-21 20:11:29
+333333333333,account-3333,us-east-1,arn:aws:lambda:us-east-1:333333333333:function:Old_Runtime_Lambda_Function-24ES8MRQJ9R6,PENDING,2024-04-21 20:11:29
+444444444444,account-4444,us-east-1,arn:aws:lambda:us-east-1:444444444444:function:Old_Runtime_Lambda_Function-134QIS8IYF84K,PENDING,2024-04-21 20:11:29
+444444444444,account-4444,us-east-1,arn:aws:lambda:us-east-1:444444444444:function:Old_Runtime_Lambda_Function-B97VeyrZNXIy,PENDING,2024-04-21 20:11:29
 ```
 
 ## Contributing
