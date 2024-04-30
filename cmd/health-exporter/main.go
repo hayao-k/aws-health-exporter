@@ -36,14 +36,20 @@ func main() {
 				Aliases: []string{"e"},
 				Usage:   "Echo CSV content to standard output",
 			},
+			&cli.StringFlag{
+				Name:    "profile",
+				Aliases: []string{"p"},
+				Usage:   "AWS profile name to use",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			ctx := context.Background()
 			service := c.String("service")
 			status := c.String("status")
 			echoToStdout := c.Bool("echo")
+			profile := c.String("profile")
 
-			cfg, err := aws.LoadAWSConfig(ctx)
+			cfg, err := aws.LoadAWSConfig(ctx, profile)
 			if err != nil {
 				return err
 			}
