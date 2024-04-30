@@ -29,7 +29,7 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 
 ### Execution Example
 ```bash
-$ health-exporter --service=RDS --status=upcoming
+$ health-exporter --service=LAMBDA --status=upcoming
 Use the arrow keys to navigate: ↓ ↑ → ← 
 ? Select an event: 
   ▸ LAMBDA - AWS_LAMBDA_PLANNED_LIFECYCLE_EVENT (us-east-1, 2024-10-14 07:00:00)
