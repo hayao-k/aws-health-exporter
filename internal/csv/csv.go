@@ -13,7 +13,7 @@ import (
 	awshealth "github.com/hayao-k/health-exporter/internal/aws/health"
 )
 
-func GenerateEventFileName(selectedEvent types.OrganizationEvent) string {
+func GenerateEventFileName(selectedEvent types.OrganizationEvent, specifiedAccountId string) string {
 	eventTypeCode := strings.ReplaceAll(
 		strings.ReplaceAll(aws.ToString(selectedEvent.EventTypeCode), " ", "_"), "/", "_")
 	startTimeStr := "N-A"
@@ -21,6 +21,9 @@ func GenerateEventFileName(selectedEvent types.OrganizationEvent) string {
 		startTimeStr = selectedEvent.StartTime.Format("2006-01-02_15-04-05")
 	}
 	eventRegion := aws.ToString(selectedEvent.Region)
+	if specifiedAccountId != "" {
+		return fmt.Sprintf("%s_%s_%s_%s.csv", eventTypeCode, startTimeStr, eventRegion, specifiedAccountId)
+	}
 	return fmt.Sprintf("%s_%s_%s.csv", eventTypeCode, startTimeStr, eventRegion)
 }
 
@@ -74,7 +77,8 @@ func writeEntriesToCsv(writer *csv.Writer, account, accountName, region string,
 
 func WriteEventDetailsToCsv(ctx context.Context, healthClient *health.Client,
 	eventArn string, accountsMapping map[string]string,
-	selectedEvent types.OrganizationEvent, csvFileName string, echoToStdout bool) error {
+	selectedEvent types.OrganizationEvent, csvFileName string,
+	echoToStdout bool, specifiedAccountId string) error {
 
 	file, err := createCsvFile(csvFileName)
 	if err != nil {
@@ -89,29 +93,34 @@ func WriteEventDetailsToCsv(ctx context.Context, healthClient *health.Client,
 		return err
 	}
 
-	affectedAccounts, err := awshealth.GetAffectedAccounts(ctx, healthClient, eventArn)
-	if err != nil {
-		return err
+	var affectedAccountIds []string
+	if specifiedAccountId != "" {
+		affectedAccountIds = []string{specifiedAccountId} // Process only the specified accounts
+	} else {
+		affectedAccountIds, err = awshealth.GetAffectedAccounts(ctx, healthClient, eventArn)
+		if err != nil {
+			return err
+		}
 	}
 
-	for _, account := range affectedAccounts {
-		accountName, exists := accountsMapping[account]
+	for _, accountId := range affectedAccountIds {
+		accountName, exists := accountsMapping[accountId]
 		if !exists {
 			accountName = "Unknown"
 		}
 
-		entities, err := awshealth.GetAffectedEntities(ctx, healthClient, eventArn, account)
+		entities, err := awshealth.GetAffectedEntities(ctx, healthClient, eventArn, accountId)
 		if err != nil {
 			fmt.Fprintf(os.Stderr,
-				"Error retrieving entities for account %s: %v\n", account, err)
+				"Error retrieving entities for account %s: %v\n", accountId, err)
 			continue
 		}
 
-		if err := writeEntriesToCsv(writer, account, accountName,
+		if err := writeEntriesToCsv(writer, accountId, accountName,
 			aws.ToString(selectedEvent.Region), entities, echoToStdout); err != nil {
 
 			fmt.Fprintf(os.Stderr,
-				"Failed to write records for account %s: %v\n", account, err)
+				"Failed to write records for accountId %s: %v\n", accountId, err)
 		}
 	}
 

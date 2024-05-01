@@ -16,6 +16,8 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 * `--service`, `-s`: Filter events by service name (e.g., RDS).
 * `--status`, `-t`: Filter events by status. Possible values are open, closed, and upcoming.
 * `--echo`, `-e`: Echo CSV content to standard output.
+* `--profile`, `-p`: Specify the AWS credential profile to use.
+* `--account-id`, `-i`: Specify a single account ID to process (optional).
 
 ### Example Commands
 
@@ -25,6 +27,12 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 
 # Describe upcoming LAMBDA events and echo the output to STDOUT
 ./health-exporter --service LAMBDA --status upcoming --echo
+
+# Get events using the specified profile
+./health-exporter --profile my-profile
+
+# Process only a single account
+./health-exporter --account-id 123456789012
 ```
 
 ### Execution Example

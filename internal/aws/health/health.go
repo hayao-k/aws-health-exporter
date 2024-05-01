@@ -10,8 +10,8 @@ import (
 )
 
 func setEventFilter(input *health.DescribeEventsForOrganizationInput,
-	service, status string) {
-	if service != "" || status != "" {
+	service, status, accountId string) {
+	if service != "" || status != "" || accountId != "" {
 		input.Filter = &types.OrganizationEventFilter{}
 		if service != "" {
 			input.Filter.Services = []string{service}
@@ -21,15 +21,18 @@ func setEventFilter(input *health.DescribeEventsForOrganizationInput,
 				types.EventStatusCode(status),
 			}
 		}
+		if accountId != "" {
+			input.Filter.AwsAccountIds = []string{accountId}
+		}
 	}
 }
 
 func DescribeEventsForOrganizationInput(
-	service, status string) *health.DescribeEventsForOrganizationInput {
+	service, status, accountId string) *health.DescribeEventsForOrganizationInput {
 	input := &health.DescribeEventsForOrganizationInput{
 		MaxResults: aws.Int32(100),
 	}
-	setEventFilter(input, service, status)
+	setEventFilter(input, service, status, accountId)
 	return input
 }
 
@@ -68,14 +71,14 @@ func GetAffectedAccounts(ctx context.Context, healthClient *health.Client,
 }
 
 func GetAffectedEntities(ctx context.Context, healthClient *health.Client,
-	eventArn, account string) ([]types.AffectedEntity, error) {
+	eventArn, accountId string) ([]types.AffectedEntity, error) {
 
 	var entities []types.AffectedEntity
 	entityPaginator := health.NewDescribeAffectedEntitiesForOrganizationPaginator(
 		healthClient, &health.DescribeAffectedEntitiesForOrganizationInput{
 			OrganizationEntityFilters: []types.EventAccountFilter{
 				{
-					AwsAccountId: aws.String(account),
+					AwsAccountId: aws.String(accountId),
 					EventArn:     aws.String(eventArn),
 				},
 			},

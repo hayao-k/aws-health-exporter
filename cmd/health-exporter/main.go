@@ -41,6 +41,11 @@ func main() {
 				Aliases: []string{"p"},
 				Usage:   "AWS profile name to use",
 			},
+			&cli.StringFlag{
+				Name:    "account-id",
+				Aliases: []string{"i"},
+				Usage:   "Specify a single account ID to process",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			ctx := context.Background()
@@ -48,6 +53,7 @@ func main() {
 			status := c.String("status")
 			echoToStdout := c.Bool("echo")
 			profile := c.String("profile")
+			specifiedAccountId := c.String("account-id")
 
 			cfg, err := aws.LoadAWSConfig(ctx, profile)
 			if err != nil {
@@ -56,7 +62,7 @@ func main() {
 
 			healthClient, orgClient := aws.CreateServices(cfg)
 
-			input := health.DescribeEventsForOrganizationInput(service, status)
+			input := health.DescribeEventsForOrganizationInput(service, status, specifiedAccountId)
 			eventsResp, err := health.DescribeEventsForOrganization(ctx, healthClient, input)
 			if err != nil {
 				return err
@@ -74,7 +80,7 @@ func main() {
 				return err
 			}
 
-			eventFileName := csv.GenerateEventFileName(selectedEvent)
+			eventFileName := csv.GenerateEventFileName(selectedEvent, specifiedAccountId)
 			err = csv.WriteEventDetailsToCsv(
 				ctx,
 				healthClient,
@@ -83,6 +89,7 @@ func main() {
 				selectedEvent,
 				eventFileName,
 				echoToStdout,
+				specifiedAccountId,
 			)
 			if err != nil {
 				return err

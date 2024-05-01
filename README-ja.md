@@ -13,9 +13,11 @@ Health Exporterは、組織の AWS Health イベント情報を取得するた�
 ## 使い方
 AWS Health Exporterを使用するには、必要なフラグを付けてコマンドを実行します。利用可能なフラグは以下の通りです。
 
---service, -s: サービス名でイベントをフィルタリングします (例: RDS)。
---status, -t: ステータスでイベントをフィルタリングします。指定可能な値は open、closed、upcoming です。
---echo, -e: CSV内容を標準出力にエコーします。
+* `--service`, `-s`: サービス名でイベントをフィルタリングします (例: RDS)。
+* `--status`, `-t`: ステータスでイベントをフィルタリングします。指定可能な値は open、closed、upcoming です。
+* `--echo`, `-e`: CSV内容を標準出力にエコーします。
+* `--profile`, `-p`: AWS クレデンシャルプロファイルを指定します。
+* `--account`, `-a`: 単一のアカウント ID を指定して、そのアカウントのみを処理します (オプション)。
 
 ### コマンドの例
 ```bash
@@ -24,6 +26,12 @@ AWS Health Exporterを使用するには、必要なフラグを付けてコマ�
 
 # 今後の LAMBDA イベントを標準出力にエコーし、CSVにエクスポート
 ./health-exporter --service LAMBDA --status upcoming --echo
+
+# 任意の AWS Profile を指定
+./health-exporter --profile my-profile
+
+# 特定の 1 アカウントのみをフィルタリングして出力
+./health-exporter --account-id 123456789012
 ```
 
 ### 実行例
