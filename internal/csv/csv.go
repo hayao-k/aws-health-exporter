@@ -13,7 +13,7 @@ import (
 	awshealth "github.com/hayao-k/health-exporter/internal/aws/health"
 )
 
-func GenerateEventFileName(selectedEvent types.OrganizationEvent, specifiedAccountId string) string {
+func GenerateEventFileName(selectedEvent types.OrganizationEvent, specifiedAccountId, statusCode string) string {
 	eventTypeCode := strings.ReplaceAll(
 		strings.ReplaceAll(aws.ToString(selectedEvent.EventTypeCode), " ", "_"), "/", "_")
 	startTimeStr := "N-A"
@@ -21,10 +21,17 @@ func GenerateEventFileName(selectedEvent types.OrganizationEvent, specifiedAccou
 		startTimeStr = selectedEvent.StartTime.Format("2006-01-02_15-04-05")
 	}
 	eventRegion := aws.ToString(selectedEvent.Region)
+	fileName := fmt.Sprintf("%s_%s_%s", eventTypeCode, startTimeStr, eventRegion)
+
 	if specifiedAccountId != "" {
-		return fmt.Sprintf("%s_%s_%s_%s.csv", eventTypeCode, startTimeStr, eventRegion, specifiedAccountId)
+		fileName += "_" + specifiedAccountId
 	}
-	return fmt.Sprintf("%s_%s_%s.csv", eventTypeCode, startTimeStr, eventRegion)
+
+	if statusCode != "" {
+		fileName += "_" + statusCode
+	}
+
+	return fileName + ".csv"
 }
 
 func createCsvFile(fileName string) (*os.File, error) {

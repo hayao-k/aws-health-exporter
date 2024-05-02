@@ -86,7 +86,11 @@ func main() {
 				return err
 			}
 
-			eventFileName := csv.GenerateEventFileName(selectedEvent, specifiedAccountId)
+			eventFileName := csv.GenerateEventFileName(
+				selectedEvent,
+				specifiedAccountId,
+				statusCode,
+			)
 			err = csv.WriteEventDetailsToCsv(
 				ctx,
 				healthClient,
