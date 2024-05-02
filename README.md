@@ -30,7 +30,7 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 # Describe upcoming LAMBDA events and echo the output to STDOUT
 ./health-exporter --service LAMBDA --status upcoming --echo
 
-# Get events with pending entities only
+# Get entities with pending status only
 ./health-exporter --status-code PENDING
 
 # Get events using the specified profile
