@@ -19,7 +19,8 @@ AWS Health Exporterを使用するには、必要なフラグを付けてコマ�
 * `--status-code`, `-c`: ステータスコードでエンティティをフィルタリングします。指定可能な値は IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING, RESOLVED です。
 * `--echo`, `-e`: CSV内容を標準出力にエコーします。
 * `--profile`, `-p`: AWS クレデンシャルプロファイルを指定します。
-* `--account`, `-a`: 単一のアカウント ID を指定して、そのアカウントのみを処理します (オプション)。
+* `--account-id`, `-a`: 単一のアカウント ID を指定して、そのアカウントのみを処理します (指定しない場合は全アカウントを出力)。
+* `--file-name`, `f`: 任意のファイル名を指定して、CSVを出力できます (指定しない場合はツールデフォルトのファイル名を使用)。
 
 ### コマンドの例
 ```bash
@@ -29,8 +30,8 @@ AWS Health Exporterを使用するには、必要なフラグを付けてコマ�
 # 今後の LAMBDA イベントを標準出力にエコーし、CSVにエクスポート
 ./health-exporter --service LAMBDA --status upcoming --echo
 
-# 未対応のリソースのみをCSVにエクスポート
-./health-exporter --status-code PENDING
+# 未対応のリソースのみを指定したファイル名でCSVにエクスポート
+./health-exporter --status-code PENDING --file-name my_event_details.csv
 
 # 任意の AWS Profile を指定
 ./health-exporter --profile my-profile

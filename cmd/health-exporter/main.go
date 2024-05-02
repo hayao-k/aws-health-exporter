@@ -51,6 +51,11 @@ func main() {
 				Aliases: []string{"i"},
 				Usage:   "Specify a single account ID to process",
 			},
+			&cli.StringFlag{
+				Name:    "file-name",
+				Aliases: []string{"f"},
+				Usage:   "Specify the output CSV file name",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			ctx := context.Background()
@@ -60,6 +65,7 @@ func main() {
 			echoToStdout := c.Bool("echo")
 			profile := c.String("profile")
 			specifiedAccountId := c.String("account-id")
+			specifiedFileName := c.String("file-name")
 
 			cfg, err := aws.LoadAWSConfig(ctx, profile)
 			if err != nil {
@@ -86,11 +92,17 @@ func main() {
 				return err
 			}
 
-			eventFileName := csv.GenerateEventFileName(
-				selectedEvent,
-				specifiedAccountId,
-				statusCode,
-			)
+			var eventFileName string
+			if specifiedFileName != "" {
+				eventFileName = specifiedFileName
+			} else {
+				eventFileName = csv.GenerateEventFileName(
+					selectedEvent,
+					specifiedAccountId,
+					statusCode,
+				)
+			}
+
 			err = csv.WriteEventDetailsToCsv(
 				ctx,
 				healthClient,

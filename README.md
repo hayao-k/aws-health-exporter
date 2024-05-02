@@ -20,6 +20,7 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 * `--echo`, `-e`: Echo CSV content to standard output.
 * `--profile`, `-p`: Specify the AWS credential profile to use.
 * `--account-id`, `-i`: Specify a single account ID to process (optional).
+* `--file-name`, `f`: Specify the output CSV file name.
 
 ### Example Commands
 
@@ -30,8 +31,8 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 # Describe upcoming LAMBDA events and echo the output to STDOUT
 ./health-exporter --service LAMBDA --status upcoming --echo
 
-# Get entities with pending status only
-./health-exporter --status-code PENDING
+# Get entities with pending status only and specify a custom file name
+./health-exporter --status-code PENDING --file-name my_event_details.csv
 
 # Get events using the specified profile
 ./health-exporter --profile my-profile
