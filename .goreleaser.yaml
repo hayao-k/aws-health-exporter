@@ -1,4 +1,4 @@
-project_name: AWS Health Exporter
+project_name: aws-health-exporter
 env:
   - GO111MODULE=on
 before:
@@ -16,9 +16,23 @@ builds:
       - linux
       - windows
       - darwin
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
 changelog:
   sort: asc
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+      - '^chore:'
+      - '^ci:'
+      - '^build:'
+      - '^refactor:'
+      - '^style:'
+    include:
+      - '^feat:'
+      - '^fix:'
+      - '^perf:'
