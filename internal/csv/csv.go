@@ -47,10 +47,14 @@ func writeHeader(writer *csv.Writer, echoToStdout bool) error {
 	return nil
 }
 
-func writeEntriesToCsv(writer *csv.Writer, account, accountName, region string,
+func writeEntriesToCsv(writer *csv.Writer, account, accountName, region, statusCode string,
 	entities []types.AffectedEntity, echoToStdout bool) error {
 
 	for _, entity := range entities {
+		if statusCode != "" && string(entity.StatusCode) != statusCode {
+			continue
+		}
+
 		statusCode := "N/A"
 		if entity.StatusCode != "" {
 			statusCode = string(entity.StatusCode)
@@ -76,9 +80,9 @@ func writeEntriesToCsv(writer *csv.Writer, account, accountName, region string,
 }
 
 func WriteEventDetailsToCsv(ctx context.Context, healthClient *health.Client,
-	eventArn string, accountsMapping map[string]string,
-	selectedEvent types.OrganizationEvent, csvFileName string,
-	echoToStdout bool, specifiedAccountId string) error {
+	eventArn, csvFileName, specifiedAccountId, statusCode string,
+	accountsMapping map[string]string, selectedEvent types.OrganizationEvent,
+	echoToStdout bool) error {
 
 	file, err := createCsvFile(csvFileName)
 	if err != nil {
@@ -117,7 +121,7 @@ func WriteEventDetailsToCsv(ctx context.Context, healthClient *health.Client,
 		}
 
 		if err := writeEntriesToCsv(writer, accountId, accountName,
-			aws.ToString(selectedEvent.Region), entities, echoToStdout); err != nil {
+			aws.ToString(selectedEvent.Region), statusCode, entities, echoToStdout); err != nil {
 
 			fmt.Fprintf(os.Stderr,
 				"Failed to write records for accountId %s: %v\n", accountId, err)

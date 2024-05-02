@@ -3,6 +3,7 @@ Health Exporterは、組織の AWS Health イベント情報を取得するた�
 
 ## 機能
 * イベントフィルタリング: サービス名とステータスでイベントをフィルタリングし、必要なデータのみを取得できます。
+* リソースフィルタリング: 特定のステータスコード (IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING, or RESOLVED) にマッチするリソースのみを取得できます。
 * AWS Organizations 対応: AWS Health の組織 View から情報を取得します。スタンドアロンアカウントでは使用できません。
 * CSVエクスポート: データを自動的にCSV形式で整形してエクスポートするため、保存、共有、分析が簡単です。
 
@@ -14,7 +15,8 @@ Health Exporterは、組織の AWS Health イベント情報を取得するた�
 AWS Health Exporterを使用するには、必要なフラグを付けてコマンドを実行します。利用可能なフラグは以下の通りです。
 
 * `--service`, `-s`: サービス名でイベントをフィルタリングします (例: RDS)。
-* `--status`, `-t`: ステータスでイベントをフィルタリングします。指定可能な値は open、closed、upcoming です。
+* `--event-status`, `--status`, `-t`: ステータスでイベントをフィルタリングします。指定可能な値は open, closed, upcoming です。
+* `--status-code`, `-c`: ステータスコードでエンティティをフィルタリングします。指定可能な値は IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING, RESOLVED です。
 * `--echo`, `-e`: CSV内容を標準出力にエコーします。
 * `--profile`, `-p`: AWS クレデンシャルプロファイルを指定します。
 * `--account`, `-a`: 単一のアカウント ID を指定して、そのアカウントのみを処理します (オプション)。
@@ -26,6 +28,9 @@ AWS Health Exporterを使用するには、必要なフラグを付けてコマ�
 
 # 今後の LAMBDA イベントを標準出力にエコーし、CSVにエクスポート
 ./health-exporter --service LAMBDA --status upcoming --echo
+
+# 未対応のリソースのみをCSVにエクスポート
+./health-exporter --status-code PENDING
 
 # 任意の AWS Profile を指定
 ./health-exporter --profile my-profile

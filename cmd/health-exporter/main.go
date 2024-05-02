@@ -27,9 +27,14 @@ func main() {
 				Usage:   "Filter events by service name, e.g., RDS",
 			},
 			&cli.StringFlag{
-				Name:    "status",
-				Aliases: []string{"t"},
+				Name:    "event-status",
+				Aliases: []string{"status", "t"},
 				Usage:   "Filter events by status. Possible values are open, closed and upcoming",
+			},
+			&cli.StringFlag{
+				Name:    "status-code",
+				Aliases: []string{"c"},
+				Usage:   "Filter entity by status code. Possible values are IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING and RESOLVED",
 			},
 			&cli.BoolFlag{
 				Name:    "echo",
@@ -50,7 +55,8 @@ func main() {
 		Action: func(c *cli.Context) error {
 			ctx := context.Background()
 			service := c.String("service")
-			status := c.String("status")
+			eventStatus := c.String("event-status")
+			statusCode := c.String("status-code")
 			echoToStdout := c.Bool("echo")
 			profile := c.String("profile")
 			specifiedAccountId := c.String("account-id")
@@ -62,7 +68,7 @@ func main() {
 
 			healthClient, orgClient := aws.CreateServices(cfg)
 
-			input := health.DescribeEventsForOrganizationInput(service, status, specifiedAccountId)
+			input := health.DescribeEventsForOrganizationInput(service, eventStatus, specifiedAccountId)
 			eventsResp, err := health.DescribeEventsForOrganization(ctx, healthClient, input)
 			if err != nil {
 				return err
@@ -85,11 +91,12 @@ func main() {
 				ctx,
 				healthClient,
 				eventArn,
+				eventFileName,
+				specifiedAccountId,
+				statusCode,
 				accountsMapping,
 				selectedEvent,
-				eventFileName,
 				echoToStdout,
-				specifiedAccountId,
 			)
 			if err != nil {
 				return err

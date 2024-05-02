@@ -3,6 +3,7 @@ Health Exporter is a command-line tool designed to describe AWS Health events fo
 
 ## Features
 * Event Filtering: Filter events by service name and status, to get precisely the data you need.
+* Entity Filtering: Filter affected entities by status code (IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING, or RESOLVED).
 * AWS Organizations Support: Works seamlessly with AWS Organizations, allowing you to get a health overview of all accounts.
 * CSV Export: Automatically formats and exports the data into a CSV file, making it simple to store, share, and analyze.
 
@@ -14,7 +15,8 @@ Health Exporter is a command-line tool designed to describe AWS Health events fo
 To use AWS Health Exporter, run the binary with the desired flags. Below are the available flags:
 
 * `--service`, `-s`: Filter events by service name (e.g., RDS).
-* `--status`, `-t`: Filter events by status. Possible values are open, closed, and upcoming.
+* `--event-status`, `--status`, `-t`: Filter events by status. Possible values are open, closed, and upcoming.
+* `--status-code`, `-c`: Filter entitiy by status code. Possible values are IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING and RESOLVED
 * `--echo`, `-e`: Echo CSV content to standard output.
 * `--profile`, `-p`: Specify the AWS credential profile to use.
 * `--account-id`, `-i`: Specify a single account ID to process (optional).
@@ -27,6 +29,9 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 
 # Describe upcoming LAMBDA events and echo the output to STDOUT
 ./health-exporter --service LAMBDA --status upcoming --echo
+
+# Get events with pending entities only
+./health-exporter --status-code PENDING
 
 # Get events using the specified profile
 ./health-exporter --profile my-profile
