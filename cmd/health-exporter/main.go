@@ -32,9 +32,19 @@ func main() {
 				Usage:   "Filter events by status. Possible values are open, closed and upcoming",
 			},
 			&cli.StringFlag{
+				Name:    "region",
+				Aliases: []string{"r"},
+				Usage:   "Filter events by region.",
+			},
+			&cli.StringFlag{
 				Name:    "status-code",
 				Aliases: []string{"c"},
 				Usage:   "Filter entity by status code. Possible values are IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING and RESOLVED",
+			},
+			&cli.StringFlag{
+				Name:    "account-id",
+				Aliases: []string{"i"},
+				Usage:   "Specify a single account ID to process",
 			},
 			&cli.BoolFlag{
 				Name:    "echo",
@@ -47,11 +57,6 @@ func main() {
 				Usage:   "AWS profile name to use",
 			},
 			&cli.StringFlag{
-				Name:    "account-id",
-				Aliases: []string{"i"},
-				Usage:   "Specify a single account ID to process",
-			},
-			&cli.StringFlag{
 				Name:    "file-name",
 				Aliases: []string{"f"},
 				Usage:   "Specify the output CSV file name",
@@ -61,6 +66,7 @@ func main() {
 			ctx := context.Background()
 			service := c.String("service")
 			eventStatus := c.String("event-status")
+			region := c.String("region")
 			statusCode := c.String("status-code")
 			echoToStdout := c.Bool("echo")
 			profile := c.String("profile")
@@ -74,7 +80,7 @@ func main() {
 
 			healthClient, orgClient := aws.CreateServices(cfg)
 
-			input := health.DescribeEventsForOrganizationInput(service, eventStatus, specifiedAccountId)
+			input := health.DescribeEventsForOrganizationInput(service, eventStatus, region, specifiedAccountId)
 			eventsResp, err := health.DescribeEventsForOrganization(ctx, healthClient, input)
 			if err != nil {
 				return err
