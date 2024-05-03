@@ -10,8 +10,8 @@ import (
 )
 
 func setEventFilter(input *health.DescribeEventsForOrganizationInput,
-	service, eventStatus, region, accountId string) {
-	if service != "" || eventStatus != "" || region != "" || accountId != "" {
+	service, eventStatus, eventCategory, region, accountId string) {
+	if service != "" || eventStatus != "" || eventCategory != "" || region != "" || accountId != "" {
 		input.Filter = &types.OrganizationEventFilter{}
 		if service != "" {
 			input.Filter.Services = []string{service}
@@ -19,6 +19,11 @@ func setEventFilter(input *health.DescribeEventsForOrganizationInput,
 		if eventStatus != "" {
 			input.Filter.EventStatusCodes = []types.EventStatusCode{
 				types.EventStatusCode(eventStatus),
+			}
+		}
+		if eventCategory != "" {
+			input.Filter.EventTypeCategories = []types.EventTypeCategory{
+				types.EventTypeCategory(eventCategory),
 			}
 		}
 		if region != "" {
@@ -31,11 +36,11 @@ func setEventFilter(input *health.DescribeEventsForOrganizationInput,
 }
 
 func DescribeEventsForOrganizationInput(
-	service, eventStatus, region, accountId string) *health.DescribeEventsForOrganizationInput {
+	service, eventStatus, eventCategory, region, accountId string) *health.DescribeEventsForOrganizationInput {
 	input := &health.DescribeEventsForOrganizationInput{
 		MaxResults: aws.Int32(100),
 	}
-	setEventFilter(input, service, eventStatus, region, accountId)
+	setEventFilter(input, service, eventStatus, eventCategory, region, accountId)
 	return input
 }
 
