@@ -32,6 +32,11 @@ func main() {
 				Usage:   "Filter events by status. Possible values are open, closed and upcoming",
 			},
 			&cli.StringFlag{
+				Name:    "event-category",
+				Aliases: []string{"category"},
+				Usage:   "Filter events by event category. Possible values are issue, accountNotification, scheduledChange and investigation",
+			},
+			&cli.StringFlag{
 				Name:    "region",
 				Aliases: []string{"r"},
 				Usage:   "Filter events by region.",
@@ -66,6 +71,7 @@ func main() {
 			ctx := context.Background()
 			service := c.String("service")
 			eventStatus := c.String("event-status")
+			eventCategory := c.String("event-category")
 			region := c.String("region")
 			statusCode := c.String("status-code")
 			echoToStdout := c.Bool("echo")
@@ -80,7 +86,7 @@ func main() {
 
 			healthClient, orgClient := aws.CreateServices(cfg)
 
-			input := health.DescribeEventsForOrganizationInput(service, eventStatus, region, specifiedAccountId)
+			input := health.DescribeEventsForOrganizationInput(service, eventStatus, eventCategory, region, specifiedAccountId)
 			eventsResp, err := health.DescribeEventsForOrganization(ctx, healthClient, input)
 			if err != nil {
 				return err
