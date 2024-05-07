@@ -1,4 +1,4 @@
-module github.com/hayao-k/health-exporter
+module github.com/hayao-k/aws-health-exporter
 
 go 1.22.2
 

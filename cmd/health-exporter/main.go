@@ -3,14 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
-	awssdk "github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/hayao-k/health-exporter/internal/aws"
-	"github.com/hayao-k/health-exporter/internal/aws/health"
-	"github.com/hayao-k/health-exporter/internal/aws/organizations"
-	"github.com/hayao-k/health-exporter/internal/csv"
-	"github.com/hayao-k/health-exporter/internal/ui"
-	"github.com/urfave/cli/v2"
 	"os"
+	"regexp"
+	"strings"
+
+	awssdk "github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/hayao-k/aws-health-exporter/internal/aws"
+	"github.com/hayao-k/aws-health-exporter/internal/aws/health"
+	"github.com/hayao-k/aws-health-exporter/internal/aws/organizations"
+	"github.com/hayao-k/aws-health-exporter/internal/csv"
+	"github.com/hayao-k/aws-health-exporter/internal/ui"
+	"github.com/urfave/cli/v2"
 )
 
 var version = "v0.0.0"
@@ -22,36 +25,9 @@ func main() {
 		Version: version,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:    "service",
-				Aliases: []string{"s"},
-				Usage:   "Filter events by service name, e.g., RDS",
-			},
-			&cli.StringFlag{
-				Name:    "event-status",
-				Aliases: []string{"status", "t"},
-				Usage:   "Filter events by status. Possible values are open, closed and upcoming",
-			},
-			&cli.StringFlag{
-				Name:    "event-category",
-				Aliases: []string{"category"},
-				Usage:   "Filter events by event category. Possible values are issue, accountNotification, scheduledChange and investigation",
-			},
-			&cli.StringFlag{
-				Name:    "region",
-				Aliases: []string{"r"},
-				Usage:   "Filter events by region.",
-			},
-			&cli.StringFlag{
-				Name:  "start-time",
-				Usage: "Filter events by start time range, e.g., --start-time={from=2023-04-01T00:00:00Z,to=2023-04-30T23:59:59Z}",
-			},
-			&cli.StringFlag{
-				Name:  "end-time",
-				Usage: "Filter events by end time range, e.g., --end-time={from=2023-04-01T00:00:00Z,to=2023-04-30T23:59:59Z}",
-			},
-			&cli.StringFlag{
-				Name:  "last-updated-time",
-				Usage: "Filter events by last updated time range, e.g., --last-updated-time={from=2023-04-01T00:00:00Z,to=2023-04-30T23:59:59Z}",
+				Name:    "event-filter",
+				Aliases: []string{"filter", "f"},
+				Usage:   "Filter events by multiple criteria, e.g., --event-filter=\"service=RDS,status=open\"",
 			},
 			&cli.StringFlag{
 				Name:    "status-code",
@@ -74,25 +50,29 @@ func main() {
 				Usage:   "AWS profile name to use",
 			},
 			&cli.StringFlag{
-				Name:    "file-name",
-				Aliases: []string{"f"},
+				Name:    "output-file",
+				Aliases: []string{"file-name", "o"},
 				Usage:   "Specify the output CSV file name",
 			},
 		},
 		Action: func(c *cli.Context) error {
 			ctx := context.Background()
-			service := c.String("service")
-			eventStatus := c.String("event-status")
-			eventCategory := c.String("event-category")
-			region := c.String("region")
+			eventFilter := c.String("event-filter")
+			filters := parseEventFilter(eventFilter)
+
+			service := filters["service"]
+			eventStatus := filters["status"]
+			eventCategory := filters["category"]
+			region := filters["region"]
+			startTime := filters["startTime"]
+			endTime := filters["endTime"]
+			lastUpdatedTime := filters["lastUpdatedTime"]
+
 			statusCode := c.String("status-code")
 			echoToStdout := c.Bool("echo")
 			profile := c.String("profile")
 			specifiedAccountId := c.String("account-id")
-			specifiedFileName := c.String("file-name")
-			startTime := c.String("start-time")
-			endTime := c.String("end-time")
-			lastUpdatedTime := c.String("last-updated-time")
+			specifiedFileName := c.String("output-file")
 
 			cfg, err := aws.LoadAWSConfig(ctx, profile)
 			if err != nil {
@@ -162,4 +142,21 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
+}
+
+func parseEventFilter(filter string) map[string]string {
+	result := make(map[string]string)
+	// Regular expression pattern to extract key-value pairs
+	// Example: key=value, key={value1,value2}
+	pattern := regexp.MustCompile(`([^,=]+)=({[^}]*}|[^,]*)`)
+	matches := pattern.FindAllStringSubmatch(filter, -1)
+
+	for _, match := range matches {
+		if len(match) == 3 {
+			key := strings.TrimSpace(match[1])
+			value := strings.TrimSpace(match[2])
+			result[key] = value
+		}
+	}
+	return result
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/health"
 	"github.com/aws/aws-sdk-go-v2/service/health/types"
-	awshealth "github.com/hayao-k/health-exporter/internal/aws/health"
+	awshealth "github.com/hayao-k/aws-health-exporter/internal/aws/health"
 )
 
 func GenerateEventFileName(selectedEvent types.OrganizationEvent, specifiedAccountId, statusCode string) string {
