@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"regexp"
-	"strings"
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/hayao-k/aws-health-exporter/internal/aws"
@@ -58,16 +56,6 @@ func main() {
 		Action: func(c *cli.Context) error {
 			ctx := context.Background()
 			eventFilter := c.String("event-filter")
-			filters := parseEventFilter(eventFilter)
-
-			service := filters["service"]
-			eventStatus := filters["status"]
-			eventCategory := filters["category"]
-			region := filters["region"]
-			startTime := filters["startTime"]
-			endTime := filters["endTime"]
-			lastUpdatedTime := filters["lastUpdatedTime"]
-
 			statusCode := c.String("status-code")
 			echoToStdout := c.Bool("echo")
 			profile := c.String("profile")
@@ -82,14 +70,8 @@ func main() {
 			healthClient, orgClient := aws.CreateServices(cfg)
 
 			input := health.DescribeEventsForOrganizationInput(
-				service,
-				eventStatus,
-				eventCategory,
-				region,
+				eventFilter,
 				specifiedAccountId,
-				startTime,
-				endTime,
-				lastUpdatedTime,
 			)
 			eventsResp, err := health.DescribeEventsForOrganization(ctx, healthClient, input)
 			if err != nil {
@@ -142,21 +124,4 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
-}
-
-func parseEventFilter(filter string) map[string]string {
-	result := make(map[string]string)
-	// Regular expression pattern to extract key-value pairs
-	// Example: key=value, key={value1,value2}
-	pattern := regexp.MustCompile(`([^,=]+)=({[^}]*}|[^,]*)`)
-	matches := pattern.FindAllStringSubmatch(filter, -1)
-
-	for _, match := range matches {
-		if len(match) == 3 {
-			key := strings.TrimSpace(match[1])
-			value := strings.TrimSpace(match[2])
-			result[key] = value
-		}
-	}
-	return result
 }

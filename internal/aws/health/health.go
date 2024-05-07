@@ -3,6 +3,7 @@ package health
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -12,12 +13,18 @@ import (
 )
 
 func setEventFilter(input *health.DescribeEventsForOrganizationInput,
-	service, eventStatus, eventCategory, region, accountId,
-	startTime, endTime, lastUpdatedTime string,
+	eventFilter, specifiedAccountId string,
 ) {
-	if service != "" || eventStatus != "" || eventCategory != "" ||
-		region != "" || accountId != "" || startTime != "" ||
-		endTime != "" || lastUpdatedTime != "" {
+	filters := parseEventFilter(eventFilter)
+	service := filters["service"]
+	eventStatus := filters["status"]
+	eventCategory := filters["category"]
+	region := filters["region"]
+	startTime := filters["startTime"]
+	endTime := filters["endTime"]
+	lastUpdatedTime := filters["lastUpdatedTime"]
+
+	if len(filters) > 0 {
 		input.Filter = &types.OrganizationEventFilter{}
 		if service != "" {
 			input.Filter.Services = []string{service}
@@ -35,8 +42,8 @@ func setEventFilter(input *health.DescribeEventsForOrganizationInput,
 		if region != "" {
 			input.Filter.Regions = []string{region}
 		}
-		if accountId != "" {
-			input.Filter.AwsAccountIds = []string{accountId}
+		if specifiedAccountId != "" {
+			input.Filter.AwsAccountIds = []string{specifiedAccountId}
 		}
 		if startTime != "" {
 			input.Filter.StartTime = parseTimeRange(startTime)
@@ -48,6 +55,23 @@ func setEventFilter(input *health.DescribeEventsForOrganizationInput,
 			input.Filter.LastUpdatedTime = parseTimeRange(lastUpdatedTime)
 		}
 	}
+}
+
+func parseEventFilter(filter string) map[string]string {
+	result := make(map[string]string)
+	// Regular expression pattern to extract key-value pairs
+	// Example: key=value, key={value1,value2}
+	pattern := regexp.MustCompile(`([^,=]+)=({[^}]*}|[^,]*)`)
+	matches := pattern.FindAllStringSubmatch(filter, -1)
+
+	for _, match := range matches {
+		if len(match) == 3 {
+			key := strings.TrimSpace(match[1])
+			value := strings.TrimSpace(match[2])
+			result[key] = value
+		}
+	}
+	return result
 }
 
 func parseTimeRange(timeRangeStr string) *types.DateTimeRange {
@@ -82,14 +106,12 @@ func parseTimeRange(timeRangeStr string) *types.DateTimeRange {
 }
 
 func DescribeEventsForOrganizationInput(
-	service, eventStatus, eventCategory, region, accountId,
-	startTime, endTime, lastUpdatedTime string,
+	eventFilter, specifiedAccountId string,
 ) *health.DescribeEventsForOrganizationInput {
 	input := &health.DescribeEventsForOrganizationInput{
 		MaxResults: aws.Int32(100),
 	}
-	setEventFilter(input, service, eventStatus, eventCategory, region, accountId,
-		startTime, endTime, lastUpdatedTime)
+	setEventFilter(input, eventFilter, specifiedAccountId)
 	return input
 }
 
