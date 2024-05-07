@@ -34,7 +34,7 @@ AWS Health Exporterを使用するには、必要なフラグを付けてコマ�
 | `endTime`         | Filter events by end time.          | ISO 8601 date format                                              |
 | `lastUpdatedTime` | Filter events by last updated time. | ISO 8601 date format                                              |
 
-`startTime` と `endTime` では、ISO 8601日付形式を使用して `from` と `to` で時間範囲を指定できます。
+`startTime`, `endTime`, `lastUpdatedTime` では、ISO 8601日付形式を使用して `from` と `to` で時間範囲を指定できます。
 
 - `{from:YYYY-MM-DDTHH:MM:SSZ,to:YYYY-MM-DDTHH:MM:SSZ}`
 

@@ -34,7 +34,7 @@ The `--event-filter` option allows you to specify complex filtering criteria. Be
 | `endTime`         | Filter events by end time.          | ISO 8601 date format                                              |
 | `lastUpdatedTime` | Filter events by last updated time. | ISO 8601 date format                                              |
 
-For `startTime` and `endTime`, you can specify a time range using `from` and `to` in ISO 8601 date format. Here is the structure for specifying the time range:
+For `startTime`, `endTime` and `lastUpdatedTime`, you can specify a time range using `from` and `to` in ISO 8601 date format. Here is the structure for specifying the time range:
 
 - `{from:YYYY-MM-DDTHH:MM:SSZ,to:YYYY-MM-DDTHH:MM:SSZ}`
 
