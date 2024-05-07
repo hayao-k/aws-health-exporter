@@ -2,7 +2,7 @@
 Health Exporter is a command-line tool designed to describe AWS Health events for your organization. It allows you to filter events by service name and status, and export the details to a CSV file. Optionally, you can echo the CSV content to standard output.
 
 ## Features
-* Event Filtering: Filter events by service name and status, to get precisely the data you need.
+* Event Filtering: Filter events by service name, event status, and other criteria to get precisely the data you need.
 * Entity Filtering: Filter affected entities by status code (IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING, or RESOLVED).
 * AWS Organizations Support: Works seamlessly with AWS Organizations, allowing you to get a health overview of all accounts.
 * CSV Export: Automatically formats and exports the data into a CSV file, making it simple to store, share, and analyze.
@@ -14,25 +14,45 @@ Health Exporter is a command-line tool designed to describe AWS Health events fo
 ## Usage
 To use AWS Health Exporter, run the binary with the desired flags. Below are the available flags:
 
-* `--service`, `-s`: Filter events by service name (e.g., RDS).
-* `--event-status`, `--status`, `-t`: Filter events by status. Possible values are open, closed, and upcoming.
+* `--event-filter`, `--filter`, `-f`: Filter events by service name, event status, and other criteria.
 * `--status-code`, `-c`: Filter entitiy by status code. Possible values are IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING and RESOLVED
 * `--echo`, `-e`: Echo CSV content to standard output.
 * `--profile`, `-p`: Specify the AWS credential profile to use.
 * `--account-id`, `-i`: Specify a single account ID to process (optional).
-* `--file-name`, `f`: Specify the output CSV file name.
+* `--output-file`, `--file-name`, `o`: Specify the output CSV file name.
+
+### Details of the event filtering option
+The `--event-filter` option allows you to specify complex filtering criteria. Below is a table of the available fields that can be included in the filter criteria:
+
+| Field             | Description                         | Possible Values                                                   |
+|-------------------|-------------------------------------|-------------------------------------------------------------------|
+| `service`         | Filter events by AWS service name.  | e.g., `LAMBDA`, `RDS`, `EKS`                                      |
+| `status`          | Filter events by status.            | `open`, `closed`, `upcoming`                                      |
+| `category`        | Filter events by category.          | `issue`, `accountNotification`, `scheduledChange`, `investigation`|
+| `region`          | Filter events by region.            | AWS region codes, e.g., `us-east-1`                               |
+| `startTime`       | Filter events by start time.        | ISO 8601 date format                                              |
+| `endTime`         | Filter events by end time.          | ISO 8601 date format                                              |
+| `lastUpdatedTime` | Filter events by last updated time. | ISO 8601 date format                                              |
+
+For `startTime` and `endTime`, you can specify a time range using `from` and `to` in ISO 8601 date format. Here is the structure for specifying the time range:
+
+- `{from:YYYY-MM-DDTHH:MM:SSZ,to:YYYY-MM-DDTHH:MM:SSZ}`
+
 
 ### Example Commands
 
 ```bash
 # Describe RDS events with open status and export to CSV
-./health-exporter --service RDS --status open
+./health-exporter --event-filter service=RDS,status=open
 
 # Describe upcoming LAMBDA events and echo the output to STDOUT
-./health-exporter --service LAMBDA --status upcoming --echo
+./health-exporter --event-filter service=LAMBDA,status=upcoming --echo
+
+# Describe only events in the Tokyo region and specify their last updated time.
+./health-exporter ----event-filter "lastUpdatedTime={from=2024-03-01T00:00:00Z,to=2024-05-02T23:59:59Z},region=ap-northeast-1"
 
 # Get entities with pending status only and specify a custom file name
-./health-exporter --status-code PENDING --file-name my_event_details.csv
+./health-exporter --status-code PENDING --output-file my_event_details.csv
 
 # Get events using the specified profile
 ./health-exporter --profile my-profile
@@ -43,7 +63,7 @@ To use AWS Health Exporter, run the binary with the desired flags. Below are the
 
 ### Execution Example
 ```bash
-$ health-exporter --service=LAMBDA --status=upcoming
+$ health-exporter --event-filter service=LAMBDA,status=upcoming
 Use the arrow keys to navigate: ↓ ↑ → ← 
 ? Select an event: 
   ▸ LAMBDA - AWS_LAMBDA_PLANNED_LIFECYCLE_EVENT (us-east-1, 2024-10-14 07:00:00)
