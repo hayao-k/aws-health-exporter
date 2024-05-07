@@ -42,6 +42,18 @@ func main() {
 				Usage:   "Filter events by region.",
 			},
 			&cli.StringFlag{
+				Name:  "start-time",
+				Usage: "Filter events by start time range, e.g., --start-time={from=2023-04-01T00:00:00Z,to=2023-04-30T23:59:59Z}",
+			},
+			&cli.StringFlag{
+				Name:  "end-time",
+				Usage: "Filter events by end time range, e.g., --end-time={from=2023-04-01T00:00:00Z,to=2023-04-30T23:59:59Z}",
+			},
+			&cli.StringFlag{
+				Name:  "last-updated-time",
+				Usage: "Filter events by last updated time range, e.g., --last-updated-time={from=2023-04-01T00:00:00Z,to=2023-04-30T23:59:59Z}",
+			},
+			&cli.StringFlag{
 				Name:    "status-code",
 				Aliases: []string{"c"},
 				Usage:   "Filter entity by status code. Possible values are IMPAIRED, UNIMPAIRED, UNKNOWN, PENDING and RESOLVED",
@@ -78,6 +90,9 @@ func main() {
 			profile := c.String("profile")
 			specifiedAccountId := c.String("account-id")
 			specifiedFileName := c.String("file-name")
+			startTime := c.String("start-time")
+			endTime := c.String("end-time")
+			lastUpdatedTime := c.String("last-updated-time")
 
 			cfg, err := aws.LoadAWSConfig(ctx, profile)
 			if err != nil {
@@ -86,7 +101,16 @@ func main() {
 
 			healthClient, orgClient := aws.CreateServices(cfg)
 
-			input := health.DescribeEventsForOrganizationInput(service, eventStatus, eventCategory, region, specifiedAccountId)
+			input := health.DescribeEventsForOrganizationInput(
+				service,
+				eventStatus,
+				eventCategory,
+				region,
+				specifiedAccountId,
+				startTime,
+				endTime,
+				lastUpdatedTime,
+			)
 			eventsResp, err := health.DescribeEventsForOrganization(ctx, healthClient, input)
 			if err != nil {
 				return err
