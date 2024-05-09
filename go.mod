@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.26.1
 	github.com/aws/aws-sdk-go-v2/config v1.27.11
 	github.com/aws/aws-sdk-go-v2/service/health v1.24.4
-	github.com/aws/aws-sdk-go-v2/service/organizations v1.27.3
+	github.com/aws/aws-sdk-go-v2/service/organizations v1.27.4
 	github.com/manifoldco/promptui v0.9.0
 	github.com/urfave/cli/v2 v2.27.2
 )
