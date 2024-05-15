@@ -30,12 +30,12 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
-      - '^chore:'
       - '^ci:'
       - '^build:'
       - '^refactor:'
       - '^style:'
     include:
+      - '^chore:'
       - '^feat:'
       - '^fix:'
       - '^perf:'
