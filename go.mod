@@ -3,7 +3,7 @@ module github.com/hayao-k/aws-health-exporter
 go 1.22.2
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.26.1
+	github.com/aws/aws-sdk-go-v2 v1.26.2
 	github.com/aws/aws-sdk-go-v2/config v1.27.13
 	github.com/aws/aws-sdk-go-v2/service/health v1.24.5
 	github.com/aws/aws-sdk-go-v2/service/organizations v1.27.4
