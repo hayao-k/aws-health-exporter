@@ -3,10 +3,10 @@ module github.com/hayao-k/aws-health-exporter
 go 1.22.2
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.27.0
+	github.com/aws/aws-sdk-go-v2 v1.27.1
 	github.com/aws/aws-sdk-go-v2/config v1.27.16
 	github.com/aws/aws-sdk-go-v2/service/health v1.24.8
-	github.com/aws/aws-sdk-go-v2/service/organizations v1.27.7
+	github.com/aws/aws-sdk-go-v2/service/organizations v1.27.8
 	github.com/manifoldco/promptui v0.9.0
 	github.com/urfave/cli/v2 v2.27.2
 )
@@ -14,8 +14,8 @@ require (
 require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.16 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.3 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.7 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.7 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.8 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.8 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.9 // indirect
